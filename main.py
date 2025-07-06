@@ -2,6 +2,7 @@ import re # remove all non-alphabet characters
 import argparse # needed for CLI applications to have arguments(e.g: python3 main.py -h/-l/-m/...)
 import queue
 import sys
+import os # needed for executing shell commands
 import sounddevice as sd
 import vosk
 
@@ -61,8 +62,18 @@ with sd.RawInputStream(samplerate=rate, blocksize = 8000, device=audio_device, d
                         if word == "hello":
                             print("Hello World")
                             continue
+
                 elif word == "meow":
                     print(":3")
+                    continue
+                
+                elif word == "python":
+                    for word in wordList:
+                        if word == "version":
+                            os.system('python3 --version')
+                            continue
+                    
+                
                             
             wordList = []
             
