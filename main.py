@@ -25,9 +25,9 @@ with sd.RawInputStream(samplerate=rate, blocksize = 8000, device=audio_device, d
     print("Press Ctrl+C to stop the recording")
     print("#" * 80)
     
-    finishWord = []
-    wordBuffer = ""
-
+    wordList = []
+    textBuffer = ""
+    
     #capture the recognized text
     rec = vosk.KaldiRecognizer(model, rate)
     while True:
@@ -36,30 +36,36 @@ with sd.RawInputStream(samplerate=rate, blocksize = 8000, device=audio_device, d
         # process the result. If the process of recognition is finished = return True
         if rec.AcceptWaveform(data):
             recordedText = rec.Result()
-            print(recordedText)
+            #print(f"Recorded Text: {recordedText}")
             
             # remove everything before a column(:) character in a string
-            resultText = recordedText.split(":", 1)[1]    
+            recordedText = recordedText.split(":", 1)[1]    
             
             # convert text(string) into lowercase
-            resultText.casefold()
-            # remove all non-alphabet characters ([^a-zA-Z] is a way to say all non-alphabet characters) 
-            #resultText = re.sub(r'[^a-zA-Z]', '', resultText)
-            resultText = re.sub(r'[""{}:,]', "", resultText)
+            recordedText.casefold()
+            # remove specific characters from the text that we get from the output of text-to-speech model
+            recordedText = re.sub(r'[""{}:,]', "", recordedText)
             
-            for character in resultText:
-                if character != "\n":
-                    wordBuffer += character
-                    print(f"wordBuffer: {wordBuffer}")
+            for character in recordedText:
+                if character != "\n" and character != " ":
+                    textBuffer += character
+                    #print(f"textBuffer: {textBuffer}")
                 else:
-                    wordBuffer = wordBuffer.strip()
-                    finishWord.append(wordBuffer)
-                    wordBuffer = ""
+                    wordList.append(textBuffer)
+                    textBuffer = ""
+                    #print(f"Word List: {wordList}")
+                    
+            for word in wordList:
+                if word == "print":
+                    for word in wordList:
+                        if word == "hello":
+                            print("Hello World")
+                            continue
+                elif word == "meow":
+                    print(":3")
+                            
+            wordList = []
             
-            print(f"FinishWord: {finishWord}")
-
-            print(f"{resultText}")
-
         else:
             print(rec.PartialResult())
     
